@@ -1,0 +1,41 @@
+# Project-specific
+logs/
+*.log
+*.log.*
+__pycache__/
+
+# Model cache and data
+.cache/
+models/
+*.bin
+*.safetensors
+*.pth
+
+# Temporary files
+tmp/
+temp/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

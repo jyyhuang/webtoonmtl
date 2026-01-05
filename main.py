@@ -1,0 +1,31 @@
+import atexit
+import json
+import logging
+import logging.config
+import pathlib
+
+logger = logging.getLogger(__name__)
+
+
+def setup_logging():
+    config_file = pathlib.Path("logging_config/config.json")
+    pathlib.Path("logs").mkdir(parents=True, exist_ok=True)
+
+    with open(config_file) as file:
+        config = json.load(file)
+    logging.config.dictConfig(config)
+    queue_handler = logging.getHandlerByName("queue_handler")
+
+    if queue_handler is not None:
+        queue_handler.listener.start()
+        atexit.register(queue_handler.listener.stop)
+
+
+def main():
+    setup_logging()
+    logger.info("hi")
+    logger.warning("warning")
+
+
+if __name__ == "__main__":
+    main()
