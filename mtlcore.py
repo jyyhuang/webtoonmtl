@@ -42,7 +42,7 @@ class MtlCore:
             logger.error(f"OCR extraction failed: {e}")
             raise
 
-    def process_image_to_translation(self, file_path: str | Path) -> list[str]:
+    def process_image_to_translation(self, file_path: str | Path) -> str | list[str]:
         """
         Extract text from image and translate to English.
 
@@ -58,7 +58,7 @@ class MtlCore:
                 logger.warning(f"No text extracted from {file_path}")
                 return []
             logger.info(f"Extracted {len(korean_text)} text segments")
-            translations = self.__translator.translate_ko_to_en(korean_text)
+            translations = self.__translator.translate(korean_text)
             logger.info(f"Translated {len(translations)} segments")
             return translations
         except Exception as e:
