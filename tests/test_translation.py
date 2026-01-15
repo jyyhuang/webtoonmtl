@@ -30,17 +30,16 @@ class TestKoreanTranslator(unittest.TestCase):
 
     def test_single_translation(self):
         """Translating a single Korean string returns one non-empty English string."""
-        result = self.translator.translate_ko_to_en(["안녕하세요"])
+        result = self.translator.translate("안녕하세요")
 
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0], str)
-        self.assertTrue(result[0].strip())
+        self.assertIsInstance(result, str)
+        self.assertTrue(result.strip())
 
     def test_batch_translation(self):
         """Batch translation preserves order and length."""
-        results = self.translator.translate_ko_to_en(self.test_cases)
+        results = self.translator.translate(self.test_cases)
 
+        self.assertIsInstance(results, list)
         self.assertEqual(len(results), len(self.test_cases))
 
         for output in results:
@@ -49,7 +48,7 @@ class TestKoreanTranslator(unittest.TestCase):
 
     def test_empty_input(self):
         """Empty input returns an empty list."""
-        result = self.translator.translate_ko_to_en([])
+        result = self.translator.translate([])
         self.assertEqual(result, [])
 
 

@@ -19,14 +19,10 @@ def test_translation_workflow():
     print("Initializing KoreanTranslator...")
     start_time = time.time()
 
-    # We can pass a custom config if we want to test with a small max_length
     translator = KoreanTranslator()
 
     load_time = time.time() - start_time
     print(f"Model loaded in {load_time:.2f} seconds")
-    print(
-        f"Device being used: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}\n"
-    )
 
     print("Testing Batch Translation:")
     print("-" * 30)
