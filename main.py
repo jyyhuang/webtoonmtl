@@ -23,8 +23,6 @@ def setup_logging():
 
 def main():
     setup_logging()
-    logger.info("hi")
-    logger.warning("warning")
 
 
 if __name__ == "__main__":
