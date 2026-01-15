@@ -1,4 +1,5 @@
 import logging
+import torch
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -44,7 +45,7 @@ class KoreanTranslator:
             None
         """
         try:
-            self.__tokenizer = AutoTokenizer.from_pretrained(path, padding_side="left")
+            self.__tokenizer = AutoTokenizer.from_pretrained(path)
 
             self.__model = AutoModelForSeq2SeqLM.from_pretrained(
                 path, dtype="auto", device_map="auto"
@@ -56,7 +57,7 @@ class KoreanTranslator:
             logger.error(f"Failed to load translation model: {e}")
             raise
 
-    def translate(self, text: str | list[str]) -> str | list[str]:
+    def translate(self, text: str | list[str]) -> list[str]:
         """
         Translate Korean text to English.
 
@@ -76,12 +77,14 @@ class KoreanTranslator:
             text, padding=True, return_tensors="pt"
         ).to(self.__model.device)
 
-        translated_tokens = self.__model.generate(
-            **model_inputs, max_length=256
-        )
+        self.__model.eval()
+        with torch.no_grad():
+            translated_tokens = self.__model.generate(
+                **model_inputs, max_length=256
+            )
 
         outputs = self.__tokenizer.batch_decode(
             translated_tokens, skip_special_tokens=True
         )
 
-        return outputs[0] if isinstance(text, str) else outputs
+        return outputs
