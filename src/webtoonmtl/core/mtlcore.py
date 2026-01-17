@@ -4,7 +4,7 @@ from typing import cast
 
 import easyocr
 
-from translator import KoreanTranslator
+from .translator import KoreanTranslator
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class MtlCore:
             logger.error(f"OCR extraction failed: {e}")
             raise
 
-    def process_image_to_translation(self, file_path: str | Path) -> str | list[str]:
+    def image_to_translation(self, file_path: str | Path) -> str | list[str]:
         """
         Extract text from image and translate to English.
 

@@ -2,15 +2,16 @@ import logging
 import torch
 from dataclasses import dataclass
 from pathlib import Path
+from accelerate import Accelerator
 
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class TranslationConfig:
-    model_name: str = "Helsinki-NLP/opus-mt-ko-en"
+    model_name: str = "facebook/nllb-200-distilled-600M"
     model_dir: str = "./models/fine-tuned-model"
 
 
@@ -23,11 +24,16 @@ class KoreanTranslator:
         self.config = config or TranslationConfig()
         self.__tokenizer = None
         self.__model = None
+        self.__pipeline = None
+        self.__device = None
+
+        self.__device = Accelerator().device
 
         if self._is_valid_model_dir(Path(self.config.model_dir)):
             load_path = self.config.model_dir
         else:
             load_path = self.config.model_name
+
         print(f"Loading model: {load_path}")
         self._load_model(load_path)
 
@@ -47,9 +53,10 @@ class KoreanTranslator:
         try:
             self.__tokenizer = AutoTokenizer.from_pretrained(path)
 
-            self.__model = AutoModelForSeq2SeqLM.from_pretrained(
-                path, dtype="auto", device_map="auto"
-            )
+            self.__model = AutoModelForSeq2SeqLM.from_pretrained(path)
+
+            self.__model.to(self.__device)
+            self.__model.eval()
 
             logger.info(f"Model loaded from {path}")
 
@@ -57,15 +64,36 @@ class KoreanTranslator:
             logger.error(f"Failed to load translation model: {e}")
             raise
 
-    def translate(self, text: str | list[str]) -> list[str]:
+    def _get_pipeline(self, src_lang: str, tgt_lang: str):
+        """Get or create pipeline for specified language"""
+        if self.__pipeline is None:
+            self.__pipeline = pipeline(
+                "translation",
+                model=self.__model,
+                tokenizer=self.__tokenizer,
+                src_lang=src_lang,
+                tgt_lang=tgt_lang,
+                device=self.__device,
+            )
+
+        return self.__pipeline
+
+    def translate(
+        self,
+        text: str | list[str],
+        src_lang: str = "kor_Hang",
+        tgt_lang: str = "eng_Latn",
+    ) -> list[str]:
         """
         Translate Korean text to English.
 
         Args:
             text: Single or a list of Korean strings to translate
+            src_lang: Source language code (defualt is Korean)
+            tgt_lang: Target language code (defualt is English)
 
         Returns:
-            Single or a list of translated English strings
+            List of translated English strings
         """
         if not text:
             return []
@@ -73,18 +101,13 @@ class KoreanTranslator:
         if self.__tokenizer is None or self.__model is None:
             raise RuntimeError("Model not loaded")
 
-        model_inputs = self.__tokenizer(
-            text, padding=True, return_tensors="pt"
-        ).to(self.__model.device)
+        is_single = isinstance(text, str)
+        texts = [text] if is_single else text
 
-        self.__model.eval()
         with torch.no_grad():
-            translated_tokens = self.__model.generate(
-                **model_inputs, max_length=256
-            )
+            translator = self._get_pipeline(src_lang, tgt_lang)
+            outputs = translator(texts, max_length=400)
 
-        outputs = self.__tokenizer.batch_decode(
-            translated_tokens, skip_special_tokens=True
-        )
+        translations = [o["translation_text"] for o in outputs]
 
-        return outputs
+        return translations

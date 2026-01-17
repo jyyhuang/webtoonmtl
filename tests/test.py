@@ -1,9 +1,7 @@
 import pathlib
 import time
-import torch
 
-from mtlcore import MtlCore
-from translator import KoreanTranslator, TranslationConfig
+from ..src.webtoonmtl import KoreanTranslator, MtlCore
 
 
 def test_translation_workflow():
@@ -33,14 +31,6 @@ def test_translation_workflow():
     except Exception as e:
         print(f"Batch translation failed: {e}")
 
-    print("\nTesting Single String Translation:")
-    print("-" * 30)
-    # Main character
-    single_result = translator.translate("주인공")
-    print(f"KO: 주인공 -> EN: {single_result}")
-
-
-
 def test_ocr():
     """Test OCR."""
     print("=== OCR Test ===\n")
@@ -49,7 +39,7 @@ def test_ocr():
         print(f"Skipping OCR test: {image_path} not found.")
         return
     mtl = MtlCore()
-    extraction = mtl.process_image_to_translation(image_path)
+    extraction = mtl.image_to_translation(image_path)
     print(extraction)
 
 
@@ -58,5 +48,6 @@ if __name__ == "__main__":
 
     # 1. Test standard translation
     test_translation_workflow()
+    test_ocr()
 
     print("\n=== Test Complete ===")
