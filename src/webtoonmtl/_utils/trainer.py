@@ -26,8 +26,8 @@ class TrainingConfig:
     dataset_name: str = "lemon-mint/Korean-FineTome-100k"
     max_length: int = 128
 
-    output_dir: Path = Path("opt/ml/model")
-    output_data_dir: Path = Path("opt/ml/output/data")
+    output_dir: Path = Path("~/.webtoonmtl/model").expanduser().resolve()
+    output_data_dir: Path = Path("~/.webtoonmtl/data").expanduser().resolve()
     gradient_checkpointing: bool = True
     per_device_train_batch_size: int = 32
     per_device_eval_batch_size: int = 32
