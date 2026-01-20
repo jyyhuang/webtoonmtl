@@ -7,7 +7,7 @@
       "datefmt": "%Y-%m-%dT%H:%M:%S%z"
     },
     "json": {
-      "()": "my_logger.JSONFormatter",
+      "()": "utils.logger.JSONFormatter",
       "fmt_keys": {
         "level": "levelname",
         "message": "message",
@@ -22,7 +22,7 @@
   },
   "filters": {
     "stdout_filter": {
-      "()": "my_logger.StdoutFilter"
+      "()": "utils.logger.StdoutFilter"
     }
   },
   "handlers": {
@@ -43,7 +43,6 @@
       "class": "logging.handlers.RotatingFileHandler",
       "level": "DEBUG",
       "formatter": "json",
-      "filename": "logs/webtoonmtl.log.jsonl",
       "maxBytes": 10000,
       "backupCount": 3
     },
