@@ -3,6 +3,11 @@ import json
 import logging
 from typing import override
 
+import appdirs
+import atexit
+import logging.config
+import pathlib
+
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
     "asctime",
@@ -29,6 +34,7 @@ LOG_RECORD_BUILTIN_ATTRS = {
     "taskName",
 }
 
+
 class JSONFormatter(logging.Formatter):
     def __init__(self, *, fmt_keys: dict[str, str] | None = None):
         super().__init__()
@@ -52,9 +58,11 @@ class JSONFormatter(logging.Formatter):
         if record.stack_info is not None:
             always["stack_info"] = self.formatStack(record.stack_info)
         message = {
-            key: msg_val
-            if (msg_val := always.pop(val, None)) is not None
-            else getattr(record, val)
+            key: (
+                msg_val
+                if (msg_val := always.pop(val, None)) is not None
+                else getattr(record, val)
+            )
             for key, val in self.fmt_keys.items()
         }
         message.update(always)
@@ -64,7 +72,26 @@ class JSONFormatter(logging.Formatter):
 
         return message
 
+
 class StdoutFilter(logging.Filter):
     @override
     def filter(self, record: logging.LogRecord) -> bool | logging.LogRecord:
         return record.levelno <= logging.INFO
+
+
+def setup_logging():
+    config_file = pathlib.Path("config/logging_config.json")
+    log_dir = pathlib.Path(appdirs.user_log_dir("webtoonmtl"))
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(config_file) as file:
+        config = json.load(file)
+
+    config["handlers"]["json_file"]["filename"] = str(log_dir / "webtoonmtl.log.jsonl")
+
+    logging.config.dictConfig(config)
+
+    queue_handler = logging.getHandlerByName("queue_handler")
+    if queue_handler is not None:
+        queue_handler.listener.start()
+        atexit.register(queue_handler.listener.stop)

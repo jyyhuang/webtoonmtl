@@ -3,10 +3,12 @@ logs/
 *.log
 *.log.*
 __pycache__/
+.pytest_cache/
 
 # Model cache and data
 .cache/
 models/
+opt/
 *.bin
 *.safetensors
 *.pth

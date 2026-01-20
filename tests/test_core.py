@@ -1,7 +1,6 @@
-import pathlib
 import time
-
-from ..src.webtoonmtl import KoreanTranslator, MtlCore
+from pathlib import Path
+from webtoonmtl import KoreanTranslator, MtlCore
 
 
 def test_translation_workflow():
@@ -31,10 +30,11 @@ def test_translation_workflow():
     except Exception as e:
         print(f"Batch translation failed: {e}")
 
+
 def test_ocr():
     """Test OCR."""
     print("=== OCR Test ===\n")
-    image_path = pathlib.Path("images/test01.jpg")
+    image_path = Path("images/test01.jpg")
     if not image_path.exists():
         print(f"Skipping OCR test: {image_path} not found.")
         return
@@ -46,7 +46,6 @@ def test_ocr():
 if __name__ == "__main__":
     print("Korean Manga Translation System Test\n")
 
-    # 1. Test standard translation
     test_translation_workflow()
     test_ocr()
 

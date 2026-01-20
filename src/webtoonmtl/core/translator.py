@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TranslationConfig:
-    model_name: str = "facebook/nllb-200-distilled-600M"
-    model_dir: str = "./models/fine-tuned-model"
+    model_name: str = "Helsinki-NLP/opus-mt-ko-en"
+    model_dir: str = "fine-tuned-model"
 
 
 class KoreanTranslator:
@@ -56,7 +56,6 @@ class KoreanTranslator:
             self.__model = AutoModelForSeq2SeqLM.from_pretrained(path)
 
             self.__model.to(self.__device)
-            self.__model.eval()
 
             logger.info(f"Model loaded from {path}")
 
@@ -104,6 +103,7 @@ class KoreanTranslator:
         is_single = isinstance(text, str)
         texts = [text] if is_single else text
 
+        self.__model.eval()
         with torch.no_grad():
             translator = self._get_pipeline(src_lang, tgt_lang)
             outputs = translator(texts, max_length=400)
