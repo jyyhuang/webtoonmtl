@@ -16,9 +16,14 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(button)
 
 
-app = QApplication(sys.argv)
+def run_gui():
+    app = QApplication(sys.argv)
 
-window = MainWindow()
-window.show()
+    window = MainWindow()
+    window.show()
 
-app.exec()
+    app.exec()
+
+
+if __name__ == "__main__":
+    run_gui()

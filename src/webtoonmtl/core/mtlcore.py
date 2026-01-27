@@ -1,25 +1,47 @@
 import logging
 from pathlib import Path
 from typing import cast
+from webtoonmtl._utils.logger import setup_logging
 
-import easyocr
-
-from .translator import KoreanTranslator
+from webtoonmtl.core.translator import KoreanTranslator
 
 logger = logging.getLogger(__name__)
+
+_logging_initialized = False
+
+
+def init_logging_once():
+    global _logging_initialized
+    if not _logging_initialized:
+        setup_logging()
+        _logging_initialized = True
 
 
 class MtlCore:
 
     def __init__(self):
         try:
-            self.__ocr_reader = easyocr.Reader(["ko"])
+            init_logging_once()
+            self.__ocr_reader = None
             self.__translator = KoreanTranslator()
+
             logger.info("MtlCore initialized successfully")
 
         except Exception as e:
             logger.error(f"Failed to initialize MtlCore: {e}")
             raise
+
+    def _ensure_ocr_loaded(self):
+        """
+        Ensures the EasyOCR reader is loaded.
+        """
+
+        import easyocr
+
+        if self.__ocr_reader is None:
+            logger.info("Loading EasyOCR model...")
+            self.__ocr_reader = easyocr.Reader(["ko"])
+            logger.info("EasyOCR model loaded.")
 
     def extract_with_ocr(self, file: str | Path) -> list[str]:
         """
@@ -32,6 +54,7 @@ class MtlCore:
             List of extracted Korean text strings
         """
         try:
+            self._ensure_ocr_loaded()
             result = cast(
                 list[str],
                 self.__ocr_reader.readtext(str(file), detail=0, paragraph=True),

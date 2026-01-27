@@ -1,12 +1,19 @@
 import logging
-import torch
 from dataclasses import dataclass
 from pathlib import Path
-from accelerate import Accelerator
+from webtoonmtl._utils.logger import setup_logging
 
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 
 logger = logging.getLogger(__name__)
+
+_logging_initialized = False
+
+
+def init_logging_once():
+    global _logging_initialized
+    if not _logging_initialized:
+        setup_logging()
+        _logging_initialized = True
 
 
 @dataclass
@@ -21,27 +28,28 @@ class KoreanTranslator:
         config: TranslationConfig | None = None,
     ) -> None:
 
+        init_logging_once()
         self.config = config or TranslationConfig()
         self.__tokenizer = None
         self.__model = None
-        self.__pipeline = None
-        self.__device = None
-
-        self.__device = Accelerator().device
-
         model_dir = Path(self.config.model_dir).expanduser().resolve()
 
-        has_weights = (model_dir / "model.safetensors").exists() or (
-            model_dir / "config.json"
-        ).exists()
-
-        if model_dir.exists() and has_weights:
-            load_path = str(model_dir)
+        if (
+            model_dir.exists()
+            and (model_dir / "config.json").exists()
+            and (model_dir / "tokenizer_config.json").exists()
+            and (model_dir / "model.safetensors").exists()
+        ):
+            self.__load_path = str(model_dir)
         else:
-            load_path = self.config.model_name
+            self.__load_path = self.config.model_name
 
-        print(f"Loading model: {load_path}")
-        self._load_model(load_path)
+        logger.info(f"Translator initialized to use path: {self.__load_path}")
+
+    def _ensure_loaded(self) -> None:
+        if self.__model is None and self.__tokenizer is None:
+            print(f"Loading model: {self.__load_path}")
+            self._load_model(self.__load_path)
 
     def _load_model(self, path: str | Path) -> None:
         """
@@ -54,17 +62,12 @@ class KoreanTranslator:
             None
         """
         try:
-            is_local = Path(path).exists()
 
-            self.__tokenizer = AutoTokenizer.from_pretrained(
-                path, local_files_only=is_local
-            )
+            from transformers import AutoModelForSeq2SeqLM, MarianTokenizer
 
-            self.__model = AutoModelForSeq2SeqLM.from_pretrained(
-                path, local_files_only=is_local
-            )
+            self.__tokenizer = MarianTokenizer.from_pretrained(path)
 
-            self.__model.to(self.__device)
+            self.__model = AutoModelForSeq2SeqLM.from_pretrained(path)
 
             logger.info(f"Model loaded from {path}")
 
@@ -72,22 +75,10 @@ class KoreanTranslator:
             logger.error(f"Failed to load translation model: {e}")
             raise
 
-    def _get_pipeline(self):
-        """Get or create pipeline for specified language"""
-        if self.__pipeline is None:
-            self.__pipeline = pipeline(
-                "translation",
-                model=self.__model,
-                tokenizer=self.__tokenizer,
-                device=self.__device,
-            )
-
-        return self.__pipeline
-
     def translate(
         self,
         text: str | list[str],
-    ) -> list[str]:
+    ) -> str | list[str]:
         """
         Translate Korean text to English.
 
@@ -95,19 +86,26 @@ class KoreanTranslator:
             text: Single or a list of Korean strings to translate
 
         Returns:
-            List of translated English strings
+            String or list of translated English strings
         """
         if not text:
             return []
 
-        if self.__tokenizer is None or self.__model is None:
-            raise RuntimeError("Model not loaded")
+        import torch
 
-        texts = [text] if isinstance(text, str) else text
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self._ensure_loaded()
 
         self.__model.eval()
-        with torch.no_grad():
-            translator = self._get_pipeline()
-            outputs = translator(texts, max_length=512, truncation=True)
+        self.__model.to(device)
 
-        return [o["translation_text"] for o in outputs]
+        with torch.no_grad():
+            inputs = self.__tokenizer(text, return_tensors="pt", padding=True).to(
+                device
+            )
+
+            outputs = self.__model.generate(**inputs, max_length=256)
+
+            result = self.__tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            return result[0] if isinstance(text, str) else result

@@ -80,7 +80,8 @@ class StdoutFilter(logging.Filter):
 
 
 def setup_logging():
-    config_file = pathlib.Path("config/logging_config.json")
+    config_file = pathlib.Path(__file__).resolve().parent / "logging_config.json"
+
     log_dir = pathlib.Path(appdirs.user_log_dir("webtoonmtl"))
     log_dir.mkdir(parents=True, exist_ok=True)
 

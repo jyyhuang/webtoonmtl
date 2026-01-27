@@ -19,6 +19,15 @@ from transformers import (
 
 logger = logging.getLogger(__name__)
 
+_logging_initialized = False
+
+
+def init_logging_once():
+    global _logging_initialized
+    if not _logging_initialized:
+        setup_logging()
+        _logging_initialized = True
+
 
 @dataclass
 class TrainingConfig:
@@ -53,6 +62,8 @@ class ModelTrainer:
         self,
         config: TrainingConfig | None = None,
     ) -> None:
+
+        init_logging_once()
         self.config = config or TrainingConfig()
 
         self.bleu = evaluate.load("sacrebleu")
@@ -62,8 +73,6 @@ class ModelTrainer:
         self.__model = None
 
         self._load_model(self.config.model_name)
-
-        setup_logging()
 
     def _load_model(self, path: str) -> None:
         """
@@ -205,7 +214,7 @@ class ModelTrainer:
             # save metrics
             metrics = train_result.metrics
             eval_metrics = trainer.evaluate()
-            metrics.update({f"eval_{k}": v for k, v in eval_metrics.items()})
+            metrics.update({k: v for k, v in eval_metrics.items()})
 
             metrics_path = output_data_dir / "metrics.json"
             with metrics_path.open("w") as f:
