@@ -19,7 +19,7 @@ Still under development, expect breaking changes
   - [License](#license)
 
 ## Demo
-[]()
+https://github.com/user-attachments/assets/6e52bf87-991e-4488-935f-eeeb72c1f76a  
 
 ## Background
 
