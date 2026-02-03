@@ -1,43 +1,10 @@
-# Project-specific
-logs/
-*.log
-*.log.*
+# Python-generated files
 __pycache__/
-.pytest_cache/
-
-# Model cache and data
-.cache/
-models/
-opt/
-*.bin
-*.safetensors
-*.pth
-
-# Temporary files
-tmp/
-temp/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
 # Virtual environments
-.env
 .venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db

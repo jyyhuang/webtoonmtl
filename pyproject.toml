@@ -1,7 +1,29 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "webtoonmtl"
-version = "1.0.0"
+version = "0.1.0"
+description = "Webtoon machine translation library"
+readme = "README.md"
+authors = [
+    { name = "jyyhuang", email = "jyyhuanggit@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "appdirs>=1.4.4",
+    "datasets>=4.5.0",
+    "easyocr>=1.7.2",
+    "evaluate>=0.4.6",
+    "pyqt6>=6.10.2",
+    "sacrebleu>=2.6.0",
+    "sacremoses>=0.1.1",
+    "sentencepiece>=0.2.1",
+    "timm>=1.0.24",
+    "torch>=2.10.0",
+    "transformers>=5.0.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.10.0"]
+build-backend = "uv_build"
+
+[project.scripts]
+webtoonmtl = "webtoonmtl.cli:cli"

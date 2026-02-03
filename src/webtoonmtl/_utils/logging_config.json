@@ -7,7 +7,7 @@
       "datefmt": "%Y-%m-%dT%H:%M:%S%z"
     },
     "json": {
-      "()": "utils.logger.JSONFormatter",
+      "()": "webtoonmtl._utils.logger.JSONFormatter",
       "fmt_keys": {
         "level": "levelname",
         "message": "message",
@@ -22,7 +22,7 @@
   },
   "filters": {
     "stdout_filter": {
-      "()": "utils.logger.StdoutFilter"
+      "()": "webtoonmtl._utils.logger.StdoutFilter"
     }
   },
   "handlers": {
@@ -48,7 +48,7 @@
     },
     "queue_handler": {
       "class": "logging.handlers.QueueHandler",
-      "handlers": ["stdout", "stderr", "json_file"],
+      "handlers": ["stderr", "json_file"],
       "respect_handler_level": true
     }
   },
