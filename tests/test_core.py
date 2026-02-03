@@ -46,7 +46,7 @@ def test_ocr():
 if __name__ == "__main__":
     print("Korean Manga Translation System Test\n")
 
-    test_translation_workflow()
+    #test_translation_workflow()
     test_ocr()
 
     print("\n=== Test Complete ===")

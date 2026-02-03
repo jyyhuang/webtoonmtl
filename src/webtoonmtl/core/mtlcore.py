@@ -57,7 +57,7 @@ class MtlCore:
             self._ensure_ocr_loaded()
             result = cast(
                 list[str],
-                self.__ocr_reader.readtext(str(file), detail=0, paragraph=True),
+                self.__ocr_reader.readtext(str(file), detail=1, paragraph=True),
             )
             return result
 
@@ -73,17 +73,26 @@ class MtlCore:
             file_path: Path to the image file
 
         Returns:
-            List of translated English strings
+            List of translated English strings and positions
         """
         try:
-            korean_text = self.extract_with_ocr(file_path)
+            ocr_results = self.extract_with_ocr(file_path)
+            korean_text = [results[1] for results in ocr_results]
+
             if not korean_text:
                 logger.warning(f"No text extracted from {file_path}")
                 return []
             logger.info(f"Extracted {len(korean_text)} text segments")
+
             translations = self.__translator.translate(korean_text)
+
+            results = []
+            for i, translation in enumerate(translations):
+                bbox = ocr_results[i][0]
+                results.append({"text": translation, "bbox": bbox})
+
             logger.info(f"Translated {len(translations)} segments")
-            return translations
+            return results
         except Exception as e:
             logger.error(f"Pipeline processing failed for {file_path}: {e}")
             raise
