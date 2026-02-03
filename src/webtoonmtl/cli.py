@@ -10,6 +10,6 @@ def cli():
 @cli.command()
 def start():
     """Starts the Webtoon MTL GUI application."""
-    from webtoonmtl.ui import app
+    from webtoonmtl.ui import run_gui
 
-    app.run_gui()
+    run_gui()
