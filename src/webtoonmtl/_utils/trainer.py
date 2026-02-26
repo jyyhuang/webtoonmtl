@@ -10,8 +10,8 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-import numpy as np
 import evaluate
+import numpy as np
 import torch
 from datasets import load_dataset
 from transformers import (
