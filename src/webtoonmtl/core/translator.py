@@ -1,8 +1,8 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from webtoonmtl._utils.logger import setup_logging
 
+from webtoonmtl._utils.logger import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -91,21 +91,12 @@ class KoreanTranslator:
         if not text:
             return []
 
-        import torch
-
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self._ensure_loaded()
 
-        self.__model.eval()
-        self.__model.to(device)
+        inputs = self.__tokenizer(text, return_tensors="pt", padding=True)
 
-        with torch.no_grad():
-            inputs = self.__tokenizer(text, return_tensors="pt", padding=True).to(
-                device
-            )
+        outputs = self.__model.generate(**inputs, max_length=256)
 
-            outputs = self.__model.generate(**inputs, max_length=256)
-
-            result = self.__tokenizer.batch_decode(outputs, skip_special_tokens=True)
-            return result[0] if isinstance(text, str) else result
+        result = self.__tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        return result[0] if isinstance(text, str) else result

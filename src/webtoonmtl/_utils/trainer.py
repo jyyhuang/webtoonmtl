@@ -2,6 +2,8 @@
 #!pip install torch
 #!pip install datasets
 #!pip install transformers
+#!pip install sacrebleu
+#!pip install sacremoses
 
 import inspect
 import json
