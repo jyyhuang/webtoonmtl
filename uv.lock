@@ -889,22 +889,6 @@ wheels = [
 ]
 
 [[package]]
-name = "timm"
-version = "1.0.24"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "huggingface-hub" },
-    { name = "pyyaml" },
-    { name = "safetensors" },
-    { name = "torch" },
-    { name = "torchvision" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f4/9d/0ea45640be447445c8664ce2b10c74f763b0b0b9ed11620d41a4d4baa10c/timm-1.0.24.tar.gz", hash = "sha256:c7b909f43fe2ef8fe62c505e270cd4f1af230dfbc37f2ee93e3608492b9d9a40", size = 2412239, upload-time = "2026-01-07T00:26:17.541Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/dd/c1f5b0890f7b5db661bde0864b41cb0275be76851047e5f7e085fe0b455a/timm-1.0.24-py3-none-any.whl", hash = "sha256:8301ac783410c6ad72c73c49326af6d71a9e4d1558238552796e825c2464913f", size = 2560563, upload-time = "2026-01-07T00:26:13.956Z" },
-]
-
-[[package]]
 name = "tokenizers"
 version = "0.22.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1057,7 +1041,7 @@ wheels = [
 
 [[package]]
 name = "webtoonmtl"
-version = "0.1.0"
+version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "appdirs" },
@@ -1065,8 +1049,6 @@ dependencies = [
     { name = "pyqt6" },
     { name = "sacremoses" },
     { name = "sentencepiece" },
-    { name = "timm" },
-    { name = "torch" },
     { name = "transformers" },
 ]
 
@@ -1077,7 +1059,5 @@ requires-dist = [
     { name = "pyqt6", specifier = ">=6.10.2" },
     { name = "sacremoses", specifier = ">=0.1.1" },
     { name = "sentencepiece", specifier = ">=0.2.1" },
-    { name = "timm", specifier = ">=1.0.24" },
-    { name = "torch", specifier = ">=2.10.0" },
     { name = "transformers", specifier = ">=5.0.0" },
 ]

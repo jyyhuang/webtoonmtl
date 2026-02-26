@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
     QScrollArea,
     QToolButton,
     QLabel,
+    QDialog,
 )
 
 from webtoonmtl.ui.widgets import ImageContainer
@@ -538,7 +539,18 @@ class MainWindow(QMainWindow):
 
 
 def run_gui():
+
+    from webtoonmtl.core.setup import is_setup_complete
+    from webtoonmtl.ui.setup_wizard import SetupWizard
     app = QApplication(sys.argv)
+    if not is_setup_complete():
+        wizard = SetupWizard()
+        wizard.start_setup()
+        result = wizard.exec()
+        if result != QDialog.DialogCode.Accepted:
+            return
+
     window = MainWindow()
     window.show()
+
     app.exec()

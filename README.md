@@ -1,6 +1,6 @@
 # Webtoon MTL
 
-A Python tool for extracting and translating Korean text from webtoon images using OCR and neural machine translation.
+A Python application for extracting and translating Korean text from webtoon images using OCR and neural machine translation.
 
 ## Project Status
 
@@ -32,21 +32,12 @@ With recent advances in optical character recognition (OCR) and neural machine t
 - **Simple GUI**: Desktop gui with PyQT6
 - **OCR Extraction**: Extract Korean text from images using EasyOCR
 - **Neural Translation**: Translate Korean to English using transformer models
-- **Model Training**: Fine-tune translation models on Korean-English datasets
+- **Model Training**: Fine-tuned translation models on Korean-English datasets
 
 ## Installation
 
-1. Clone the repository:
-
 ```bash
-git clone https://github.com/jyyhuang/webtoonmtl.git
-cd webtoonmtl
-```
-
-2. Install dependencies:
-
-```bash
-pip install -r requirements.txt
+pip install webtoonmtl
 ```
 
 ## Usage
@@ -62,10 +53,10 @@ webtoonmtl start
 - ✅ Add support for fine-tuning the translation model
 - ✅ Create command line usage
 - ✅ Desktop GUI with PyQT
+- ✅ Package as a pip library
 - ⬜ Add better testing
 - ⬜ Cache OCR, model, and translations
 - ⬜ Improve logging, error handling, and progress reports
-- ⬜ Package as a pip library
 
 ## License
 
